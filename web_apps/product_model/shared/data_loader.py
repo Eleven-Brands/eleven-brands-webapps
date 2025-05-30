@@ -1,16 +1,88 @@
-'''
+"""
 data_loader.py
 
-Utilities to load all product model data into a unified namespace.
+Load + append all product-model CSVs.  
 
-This module wraps the call to `load_csvs_once` and assembles each
-DataFrame stored in `st.session_state` into a SimpleNamespace, making
-it easy to access all loaded tables via attributes.
-'''
+Provides:
+- get_main_path() → Path  
+- MODULE-LEVEL PATH_CSV_* constants  
+- load_csvs_once()      : read each CSV into st.session_state exactly once  
+- append_to_csv(df, path): append DataFrame rows (no header/index)  
+- load_all_data() → SimpleNamespace: call load_csvs_once() then bundle all tables
+"""
 
-import streamlit as st
+# Standard lib
+from pathlib import Path
 from types import SimpleNamespace
-from product_model.shared.shared_data import load_csvs_once
+
+# 3rd-party
+import pandas as pd
+import streamlit as st
+
+
+# ─── CSVs Paths Constants ──────────────────────────────────────────────────────
+def get_main_path() -> Path:
+    """
+    Determine which MAIN_PATH exists on the user's machine.
+
+    Checks a list of candidate directories and returns the first one that exists.
+
+    Raises:
+        FileNotFoundError: If none of the candidate paths exist.
+    """
+    candidate_paths = [
+        Path(r'G:\Shared drives\OrganiHaus\3.1 - OH Data & Reports\product_model'),
+        Path(r'G:\Drives compartilhados\OrganiHaus\3.1 - OH Data & Reports\product_model'),
+    ]
+    for p in candidate_paths:
+        if p.exists() and p.is_dir():
+            return p
+    raise FileNotFoundError(
+        "None of the candidate MAIN_PATH directories exist. "
+        f"Tried: {', '.join(str(p) for p in candidate_paths)}"
+    )
+
+
+MAIN_PATH = get_main_path()
+
+PATH_CSV_AMAZON_FAMILY        = MAIN_PATH / 'td_product_model_amazon_family.csv'
+PATH_CSV_BASE_SKU_DIMS        = MAIN_PATH / 'td_product_model_base_sku_dimensions.csv'
+PATH_CSV_BASE_SKU_HIER        = MAIN_PATH / 'td_product_model_base_sku_hierarchy.csv'
+PATH_CSV_COLOR_PATTERN        = MAIN_PATH / 'td_product_model_color_pattern.csv'
+PATH_CSV_OB_SALES_MARKETPLACE = MAIN_PATH / 'td_product_model_ob_amz_sales_marketplace.csv'
+PATH_CSV_PRICE_FAMILY         = MAIN_PATH / 'td_product_model_price_family_by_supplier.csv'
+PATH_CSV_PRICE_LOG            = MAIN_PATH / 'td_product_model_price_log.csv'
+PATH_CSV_SALES_COUNTRY        = MAIN_PATH / 'td_product_model_sales_country.csv'
+PATH_CSV_SKUS                 = MAIN_PATH / 'td_product_model_skus.csv'
+
+
+
+# ─── CORE I/O FUNCTIONS ───────────────────────────────────────────────────────
+
+def load_csvs_once() -> None:
+    """
+    Load product model CSV files into Streamlit session state, once per session.
+
+    Reads from the module-level PATH_CSV_* constants and stores DataFrames
+    under descriptive keys in `st.session_state`. On subsequent calls, no I/O.
+
+    Raises:
+        FileNotFoundError: If any of the expected CSV files are missing.
+        pandas.errors.ParserError: If CSV parsing fails for any file.
+    """
+
+    if 'data_loaded' not in st.session_state:
+        st.session_state.df_amazon_family        = pd.read_csv(PATH_CSV_AMAZON_FAMILY)
+        st.session_state.df_base_sku_dims        = pd.read_csv(PATH_CSV_BASE_SKU_DIMS)
+        st.session_state.df_base_sku_hier        = pd.read_csv(PATH_CSV_BASE_SKU_HIER)
+        st.session_state.df_color_pattern        = pd.read_csv(PATH_CSV_COLOR_PATTERN)
+        st.session_state.df_ob_sales_marketplace = pd.read_csv(PATH_CSV_OB_SALES_MARKETPLACE)
+        st.session_state.df_price_family         = pd.read_csv(PATH_CSV_PRICE_FAMILY)
+        st.session_state.df_price_log            = pd.read_csv(PATH_CSV_PRICE_LOG)
+        st.session_state.df_sales_country        = pd.read_csv(PATH_CSV_SALES_COUNTRY)
+        st.session_state.df_skus                 = pd.read_csv(PATH_CSV_SKUS)
+
+        st.session_state.data_loaded = True
 
 
 def load_all_data() -> SimpleNamespace:
@@ -36,11 +108,29 @@ def load_all_data() -> SimpleNamespace:
     load_csvs_once()
     return SimpleNamespace(
         amazon_family = st.session_state.df_amazon_family,
-        base_sku_dims = st.session_state.df_base_sku_dimensions,
-        base_sku_hier = st.session_state.df_base_sku_hierarchy,
+        base_sku_dims = st.session_state.df_base_sku_dims,
+        base_sku_hier = st.session_state.df_base_sku_hier,
         color_pattern = st.session_state.df_color_pattern,
-        price_family  = st.session_state.df_price_family_by_supplier,
+        price_family  = st.session_state.df_price_family,
         price_log     = st.session_state.df_price_log,
         sales_country = st.session_state.df_sales_country,
         skus          = st.session_state.df_skus,
     )
+
+
+def append_to_csv(df: pd.DataFrame, path: Path) -> None:
+    """
+    Append new rows from a DataFrame to an existing CSV file.
+
+    Writes the contents of `df` to the CSV at `path` in append mode,
+    omitting the header row and index. If `df` is empty, no file I/O occurs.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the rows to append.
+        path (Path): Filesystem path to the target CSV file.
+
+    Raises:
+        OSError: If the file cannot be opened or written.
+    """
+    if not df.empty:
+        df.to_csv(path, mode='a', header=False, index=False)
