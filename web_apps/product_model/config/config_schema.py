@@ -1,21 +1,10 @@
 """
 config_schema.py
 
-Defines the column-metadata schemas for the Streamlit Product Catalog app.
-
-This module provides:
-
-- `ColumnMeta` TypedDict and `Schema` alias for strong typing of column 
-metadata.
-- `COMMON_COLUMNS`: a shared dictionary of metadata for columns used across 
-multiple tables.
-- Per-table schema dictionaries that map each column name to its `type`, 
-`alias`, and `help` text. 
-- All schemas preserve insertion order, ensuring consistent field order in forms and tables.
-
-Each schema can be used to:
-- Configure Streamlit's `st.column_config` when displaying dataframes.
-- Drive form-building or validation logic by iterating fields in the defined order.
+This module defines column-metadata schemas for the Streamlit Product Catalog app, including:
+- `ColumnMeta` TypedDict and `Schema` alias for strong typing of metadata
+- `COMMON_COLUMNS` and `TRACKING_CHANGE_COLUMNS` for shared field definitions
+- Per-table schema dictionaries mapping column names to metadata, preserving insertion order
 """
 
 from typing import TypedDict, Dict
@@ -53,6 +42,40 @@ COMMON_COLUMNS: Schema = {
 }
 
 
+TRACKING_CHANGE_COLUMNS: Schema = {
+     'effective_start': {
+        'type': 'DATETIME',
+        'alias': 'Effective Start',
+        'help': 'Timestamp at which this row/version becomes valid/in effect.',
+    },
+     'effective_end': {
+          'type': 'DATETIME',
+          'alias': 'Effective End',
+          'help': 'Timestamp at which this row/version is superseded. Use \'9999-12-31 00:00:00\' for current versions.',
+     },
+     'is_current': {
+          'type': 'BOOLEAN',
+          'alias': 'Is Current',
+          'help': 'True if this row is the current active version; False otherwise',
+     },
+     'created_by': {
+          'type': 'STRING',
+          'alias': 'Created By',
+          'help': 'Email (or user ID) of the person who created this version.',
+     },
+     'created_at': {
+          'type': 'DATETIME',
+          'alias': 'Created At',
+          'help': 'Timestamp when this version was inserted into the system.',
+     },
+     'transaction_id':{
+          'type': 'STRING',
+          'alias': 'Transaction ID',
+          'help': 'TODO: fill in with team-approved description',
+     },
+}
+
+
 TD_PRODUCT_MODEL_SKUS: Schema = {
      'base_sku': COMMON_COLUMNS['base_sku'],
      'sku': {
@@ -65,6 +88,14 @@ TD_PRODUCT_MODEL_SKUS: Schema = {
           'alias': 'FNSKU',
           'help': 'Amazon FNSKU used in fulfillment labeling.',
      },
+     # Pull in exactly those five “SCD” columns from COMMON_COLUMNS:
+     **{ key: TRACKING_CHANGE_COLUMNS[key] for key in [
+          "effective_start",
+          "effective_end",
+          "is_current",
+          "created_by",
+          "created_at",
+     ]},
 }
 
 
@@ -103,11 +134,6 @@ TD_PRODUCT_MODEL_BASE_SKU_DIMENSIONS: Schema = {
           'alias': 'Carton Height (cm)',
           'help': 'Carton height in centimeters.',
      },
-     'carton_volume_cbm': {
-          'type': 'FLOAT',
-          'alias': 'Carton Volume (CBM)',
-          'help': 'Carton volume in cubic meters (CBM).',
-     },
 
 
      # AWD Carton Info
@@ -136,12 +162,6 @@ TD_PRODUCT_MODEL_BASE_SKU_DIMENSIONS: Schema = {
           'alias': 'AWD Carton Height (cm)',
           'help': 'AWD-specific carton height in centimeters.',
      },
-     'awd_carton_volume_cbm': {
-          'type': 'FLOAT',
-          'alias': 'AWD Carton Volume (CBM)',
-          'help': 'AWD-specific carton volume in cubic meters (CBM).',
-     },
-
 
      # Package Info
      'units_per_package': {
@@ -169,11 +189,6 @@ TD_PRODUCT_MODEL_BASE_SKU_DIMENSIONS: Schema = {
           'alias': 'Package Height (cm)',
           'help': 'Package height in centimeters.',
      },
-     'package_volume_cbm': {
-          'type': 'FLOAT',
-          'alias': 'Package Volume (CBM)',
-          'help': 'Package volume in cubic meters (CBM).',
-     },
 
 
      # Item Info
@@ -192,6 +207,13 @@ TD_PRODUCT_MODEL_BASE_SKU_DIMENSIONS: Schema = {
           'alias': 'Item Height(cm)',
           'help': 'Individual item height in centimeters.',
      },
+     **{ key: TRACKING_CHANGE_COLUMNS[key] for key in [
+          "effective_start",
+          "effective_end",
+          "is_current",
+          "created_by",
+          "created_at",
+     ]},
 }
 
 
@@ -212,11 +234,6 @@ TD_PRODUCT_MODEL_BASE_SKU_HIERARCHY: Schema = {
           'type': 'STRING',
           'alias': 'Product Material',
           'help': 'Primary material used in the product.',
-     },
-     'brand_code': {
-          'type': 'STRING',
-          'alias': 'Brand Code',
-          'help': 'Two-letter code identifying the brand.',
      },
      'brand_name': {
           'type': 'STRING',
@@ -277,6 +294,13 @@ TD_PRODUCT_MODEL_BASE_SKU_HIERARCHY: Schema = {
           'help': 'TODO: fill in with team-approved description',
      },
      'native_family': COMMON_COLUMNS['native_family'],
+     **{ key: TRACKING_CHANGE_COLUMNS[key] for key in [
+          "effective_start",
+          "effective_end",
+          "is_current",
+          "created_by",
+          "created_at",
+     ]},
 }
 
 
