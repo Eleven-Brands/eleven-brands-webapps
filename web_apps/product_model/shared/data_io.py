@@ -1,21 +1,20 @@
 """
-data_loader.py
+shared_io.py
 
-Load + append all product-model CSVs.  
+Lean I/O layer for the Product-Model Streamlit app.
 
-Provides:
-- get_main_path() → Path  
-- MODULE-LEVEL PATH_CSV_* constants  
-- load_csvs_once()      : read each CSV into st.session_state exactly once  
-- append_to_csv(df, path): append DataFrame rows (no header/index)  
-- load_all_data() → SimpleNamespace: call load_csvs_once() then bundle all tables
+Exposes
+- `MAIN_PATH` & `get_main_path()`   - detect the root folder on the G: drive(s).
+- `PATH_CSV_*` constants            - absolute paths to each product-model CSV.
+- `load_csvs_once()`                - read every CSV into `st.session_state`
+                                        (df_* keys) exactly once per session.
+- `load_all_data()`                 - return those DataFrames bundled in a
+                                        `types.SimpleNamespace` for easy access.
 """
 
-# Standard lib
+
 from pathlib import Path
 from types import SimpleNamespace
-
-# 3rd-party
 import pandas as pd
 import streamlit as st
 
@@ -48,6 +47,7 @@ MAIN_PATH = get_main_path()
 PATH_CSV_AMAZON_FAMILY        = MAIN_PATH / 'td_product_model_amazon_family.csv'
 PATH_CSV_BASE_SKU_DIMS        = MAIN_PATH / 'td_product_model_base_sku_dimensions.csv'
 PATH_CSV_BASE_SKU_HIER        = MAIN_PATH / 'td_product_model_base_sku_hierarchy.csv'
+PATH_CSV_BRANDS               = MAIN_PATH / 'td_product_model_brands.csv'
 PATH_CSV_COLOR_PATTERN        = MAIN_PATH / 'td_product_model_color_pattern.csv'
 PATH_CSV_OB_SALES_MARKETPLACE = MAIN_PATH / 'td_product_model_ob_amz_sales_marketplace.csv'
 PATH_CSV_PRICE_FAMILY         = MAIN_PATH / 'td_product_model_price_family_by_supplier.csv'
@@ -75,6 +75,7 @@ def load_csvs_once() -> None:
         st.session_state.df_amazon_family        = pd.read_csv(PATH_CSV_AMAZON_FAMILY)
         st.session_state.df_base_sku_dims        = pd.read_csv(PATH_CSV_BASE_SKU_DIMS)
         st.session_state.df_base_sku_hier        = pd.read_csv(PATH_CSV_BASE_SKU_HIER)
+        st.session_state.df_brands               = pd.read_csv(PATH_CSV_BRANDS)
         st.session_state.df_color_pattern        = pd.read_csv(PATH_CSV_COLOR_PATTERN)
         st.session_state.df_ob_sales_marketplace = pd.read_csv(PATH_CSV_OB_SALES_MARKETPLACE)
         st.session_state.df_price_family         = pd.read_csv(PATH_CSV_PRICE_FAMILY)
@@ -116,21 +117,3 @@ def load_all_data() -> SimpleNamespace:
         sales_country = st.session_state.df_sales_country,
         skus          = st.session_state.df_skus,
     )
-
-
-def append_to_csv(df: pd.DataFrame, path: Path) -> None:
-    """
-    Append new rows from a DataFrame to an existing CSV file.
-
-    Writes the contents of `df` to the CSV at `path` in append mode,
-    omitting the header row and index. If `df` is empty, no file I/O occurs.
-
-    Args:
-        df (pd.DataFrame): DataFrame containing the rows to append.
-        path (Path): Filesystem path to the target CSV file.
-
-    Raises:
-        OSError: If the file cannot be opened or written.
-    """
-    if not df.empty:
-        df.to_csv(path, mode='a', header=False, index=False)
