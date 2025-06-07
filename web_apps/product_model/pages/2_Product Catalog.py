@@ -1,23 +1,40 @@
 """
 2_Product_Catalog.py
 
-Streamlit page script for the Product Catalog interface.
+Streamlit page script for the Product Catalog interface in the Product Model application.
 
-This module:
-- Configures the Streamlit page (title, layout)
-- Handles user authentication and sidebar display
-- Loads all application data
-- Defines which filters (country, supplier) are disabled for each view
-- Renders one tab per configured page view from the router
-- Applies text and multiselect filters on SKU, native family, country, and supplier
-- Displays filtered DataFrames with custom column configuration
-- Provides CSV download with an option to use display name aliases
+This module renders an interactive, tab-based dashboard for exploring various views of 
+product-related data, such as Base SKUs, pricing, and hierarchy. Each tab corresponds 
+to a configured view defined in `PAGES`, and allows users to filter, view, and export 
+data dynamically.
+
+Core Features:
+- Page initialization with title, layout, and user authentication.
+- Dynamically generated tabs based on registered views in `product_catalog_router`.
+- Per-tab filters for Base SKU, native family, country, and supplier, with view-specific disabling.
+- Data preview via `st.dataframe()` with schema-driven column configuration.
+- Export to CSV with optional use of display name aliases for column headers.
+
+Key Components:
+- `require_login`, `show_user_sidebar`: Ensure user authentication and sidebar UI.
+- `load_all_data`: Loads and caches data tables into memory.
+- `DISABLE_CONFIG`: Dictates filter availability per page view.
+- `apply_filters`: Applies all filter controls to the active DataFrame.
+- `make_column_config`: Constructs custom column rendering configuration.
+- `rename_dataframe_with_aliases`: Optionally maps internal column names to user-facing aliases.
+- `download_button`: Allows filtered table to be downloaded as CSV.
+
+This module assumes that each registered page in `PAGES` exposes:
+- `.view(data) -> pd.DataFrame`: returns the DataFrame to display for that tab
+- `.schema -> dict`: column metadata schema used for formatting and aliasing
+
+Intended to be used as part of a multi-page Streamlit app.
 """
 
 import streamlit as st
 from product_model.shared.shared_auth import require_login, show_user_sidebar
-from product_model.shared.data_loader import load_all_data
-from product_model.shared.ui_helpers import build_column_config_from_schema, combined_aliases, apply_filters
+from web_apps.product_model.shared.data_io import load_all_data
+from product_model.shared.ui_helpers import make_column_config, rename_dataframe_with_aliases, apply_filters
 from product_model.page_config.product_catalog_router import PAGES
 
 
@@ -45,7 +62,7 @@ DISABLE_CONFIG = {
 }
 
 
-# ─── Page Selector & Data Preparatio ───────────────────────────────────────────
+# ─── Page Selector & Data Preparation ──────────────────────────────────────────
 
 st.title("Product Catalog")
 
@@ -115,7 +132,12 @@ for tab, (section_name, page) in zip(tabs, PAGES.items()):
           else:
                st.dataframe(
                     merged_filtered, 
-                    column_config=build_column_config_from_schema(merged_filtered, page.schema)
+                    column_config=make_column_config(
+                         column_schema=page.schema, 
+                         df_columns=merged_filtered.columns, 
+                         has_numeric_format=True,
+                         view_type="table"
+                    )
                )
 
 
@@ -124,7 +146,7 @@ for tab, (section_name, page) in zip(tabs, PAGES.items()):
 
           download_placeholder = st.empty()
           with st.spinner("Preparing file...", show_time=True):
-               csv_data = combined_aliases(merged_filtered, page.schema) if use_aliases else merged_filtered
+               csv_data = rename_dataframe_with_aliases(merged_filtered, page.schema) if use_aliases else merged_filtered
                csv = csv_data.to_csv(index=False).encode('utf-8')
 
 
