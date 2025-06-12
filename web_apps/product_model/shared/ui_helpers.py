@@ -135,13 +135,17 @@ def make_column_config(
                base_kwargs["disabled"] = True
 
           # Finally, pick which Column class to instantiate
-          if col_type == "FLOAT":
-               fmt = "%.2f" if has_numeric_format else None
-               config[col] = st.column_config.NumberColumn(**base_kwargs, format=fmt)
+          if view_type == "table":
+               if col_type == "FLOAT":
+                    fmt = "%.2f" if has_numeric_format else None
+                    config[col] = st.column_config.NumberColumn(**base_kwargs, format=fmt)
 
-          elif col_type == "INTEGER":
-               fmt = "%d" if has_numeric_format else None
-               config[col] = st.column_config.NumberColumn(**base_kwargs, format=fmt)
+               elif col_type == "INTEGER":
+                    fmt = "%d" if has_numeric_format else None
+                    config[col] = st.column_config.NumberColumn(**base_kwargs, format=fmt)
+
+               else:
+                    config[col] = st.column_config.TextColumn(**base_kwargs)
 
           else:
                config[col] = st.column_config.TextColumn(**base_kwargs)

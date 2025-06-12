@@ -35,7 +35,8 @@ from typing import Set, List
 
 
 def _trim_trailing_empty_rows(df: pd.DataFrame) -> pd.DataFrame:
-    """Remove fully blank rows at the bottom of a DataFrame.
+    """
+    Remove fully blank rows at the bottom of a DataFrame.
 
     A *blank* row is one in which **every** cell is an empty string after
     ``str.strip()``. The returned slice is copied, so downstream mutations
@@ -60,7 +61,7 @@ def _trim_trailing_empty_rows(df: pd.DataFrame) -> pd.DataFrame:
     return df.loc[:last_valid_index].copy()
 
 def _validate_schema_datatypes(
-        trimmed_df: pd.DataFrame, 
+        df: pd.DataFrame, 
         schema: dict, 
         optional_fields: set = None
     ) -> list[str]:
@@ -91,6 +92,7 @@ def _validate_schema_datatypes(
             An empty list indicates that all checks passed.
     """
 
+    trimmed_df = _trim_trailing_empty_rows(df)
     optional_fields = optional_fields or set()
     errors: list[str] = []
     for col, props in schema.items():
@@ -118,7 +120,7 @@ def _validate_schema_datatypes(
     return errors
 
 def _validate_column_uniqueness(
-        trimmed_df: pd.DataFrame,
+        df: pd.DataFrame,
         column: str,
         existing: Set[str],
         human_label: str,
@@ -155,6 +157,7 @@ def _validate_column_uniqueness(
             will be empty.
     """
 
+    trimmed_df = _trim_trailing_empty_rows(df)
     errors: List[str] = []
     series = trimmed_df[column].dropna().astype(str).str.strip()
 
