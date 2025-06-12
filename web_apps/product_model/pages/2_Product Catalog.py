@@ -33,7 +33,7 @@ Intended to be used as part of a multi-page Streamlit app.
 
 import streamlit as st
 from product_model.shared.shared_auth import require_login, show_user_sidebar
-from web_apps.product_model.shared.data_io import load_all_data
+from product_model.shared.data_io import load_all_data
 from product_model.shared.ui_helpers import make_column_config, rename_dataframe_with_aliases, apply_filters
 from product_model.page_config.product_catalog_router import PAGES
 
