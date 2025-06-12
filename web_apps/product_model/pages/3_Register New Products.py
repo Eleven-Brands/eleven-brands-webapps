@@ -243,7 +243,7 @@ with st.expander(label=hier_expander_title, expanded=hier_expand_section):
           st.info("ℹ️ Fill and validate base SKUs to auto-fill this section with actual rows.")
 
      if st.button(label="✅ Verify Hierarchy", key="verify_hier"):
-          validation_errors = _validate_schema_datatypes(hier_df, cols_hier, skip_required={"image_url"})
+          validation_errors = _validate_schema_datatypes(hier_df, cols_hier, optional_fields={"image_url"})
 
           if validation_errors:
                for err in validation_errors:
