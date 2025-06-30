@@ -1,0 +1,15 @@
+
+div.stHorizontalBlock > div.stColumn:has(div.stMetric) {
+     background-color: rgb(38, 39, 48)  !important;
+     border: none;
+     padding: 20px 20px 20px 20px;
+     border-radius: 10px;
+     /* color: #c99a00; */
+}
+
+div.stButton > button[disabled] {
+        background-color: #98b9d0 !important;
+        color:            #4c5966 !important;
+        border-color:     #ffffff !important;
+        box-shadow:       none    !important;
+}
