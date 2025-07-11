@@ -3,8 +3,8 @@ product_model.py
 
 Builders for the product model.
 
-This module provides a cached function to fetch and merge SKU, hierarchy, and Amazon-family tables
-from Streamlit session_state into a single, consolidated DataFrame.
+This module provides a cached function to fetch and merge SKU, hierarchy, and
+Amazon-family tables from Streamlit session_state into a single, consolidated DataFrame.
 """
 
 import pandas as pd

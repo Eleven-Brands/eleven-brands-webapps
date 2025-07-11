@@ -5,16 +5,16 @@ This module loads, enriches, and aggregates Primeday 2025 target sales data,
 producing summaries of target revenue and units for analysis and reporting.
 
 Public API:
-    build_target_sales_by_region_date() -> pandas.DataFrame
-        - Aggregates target revenue and units by sales_region, event_date, and day.
-    build_target_sales_by_region_sku_date() -> pandas.DataFrame
-        - Aggregates target revenue and units by sales_region, sku, amazon_family, event_date, and day.
+    build_target_sales_by_region_date() - Aggregates target revenue and units by
+      sales_region, event_date, and day.
+    build_target_sales_by_region_sku_date() - Aggregates target revenue and units by
+      sales_region, sku, amazon_family, event_date, and day.
 
 Internal Helpers:
-    _get_target_sales_df() -> pandas.DataFrame
-        - Loads raw target sales data for each event day using configured schema.
-    _get_target_sales_with_dates() -> pandas.DataFrame
-        - Maps day indices to actual event dates, adding an `event_date` column.
+    _get_target_sales_df() - Loads raw target sales data for each event day using
+      configured schema.
+    _get_target_sales_with_dates() - Maps day indices to actual event dates, adding an
+      `event_date` column.
 
 Dependencies:
     - pandas for DataFrame operations
@@ -59,11 +59,12 @@ def build_target_sales_by_region_date():
 
 def build_target_sales_by_region_sku_date():
     """
-    Aggregate target sales by sales region, amazon_family, sku, event date, and day index.
+    Aggregate target sales by sales region, amazon_family, sku, event date, and day
+    index.
 
     Returns:
-        MultiIndexed by ['sales_region', 'amazon_family', 'sku', 'event_date', 'day'], containing
-        'target_revenue' and 'target_units' as summed values.
+        MultiIndexed by ['sales_region', 'amazon_family', 'sku', 'event_date', 'day'],
+        containing 'target_revenue' and 'target_units' as summed values.
     """
 
     target_df = _get_target_sales_with_dates()

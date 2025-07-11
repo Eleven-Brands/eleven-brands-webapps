@@ -14,15 +14,16 @@ order and product modeling. It provides:
     - ALL_ORDER_COLS: expected columns in raw "All Orders" tables.
     - PAST_EVENTS_COLS: expected columns in historical event orders tables.
     - SALES_CHANNEL: columns required for sales channel lookups.
-    - SKU_COLS, HIERARCHY_COLS, AMAZON_FAMILY_COLS: column groups used in product hierarchies.
+    - SKU_COLS, HIERARCHY_COLS, AMAZON_FAMILY_COLS: column groups used in product
+      hierarchies.
     - TARGET_COLS: expected columns for target sales by Sales Region, sku and day index
     - COMMIT_COLS: expected columns for commited units by Sales Region, sku and Date
 
 - MARKETPLACE_TZ: mapping of country codes to language and IANA timezone strings for
   converting UTC timestamps to local timezones.
 
-These definitions ensure consistent column naming, data validation, and timezone handling
-throughout the data pipelines.
+These definitions ensure consistent column naming, data validation, and timezone
+handling throughout the data pipelines.
 """
 
 from typing import TypedDict, Dict, List

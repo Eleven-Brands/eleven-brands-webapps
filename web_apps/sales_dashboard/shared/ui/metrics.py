@@ -5,11 +5,16 @@ This module provides functions to compute and format key sales performance metri
 from order data, and to compare current-period averages against a prior period.
 
 Public API:
-    compute_metrics(all_orders_df, all_orders_df_hourly, all_orders_df_hourly_last_event)
+    compute_metrics(
+        all_orders_df,
+        all_orders_df_hourly,
+        all_orders_df_hourly_last_event
+    )
         - Calculate total units sold and total revenue for the current event.
         - Calculate average units sold per hour and average revenue per hour.
         - Compute percentage change of current averages versus a previous event.
-        - Return all values as formatted strings (with separators, currency symbols, and percent signs).
+        - Return all values as formatted strings (with separators, currency symbols, and
+          percent signs).
 
 Internal Helpers:
     None
@@ -29,9 +34,9 @@ def compute_metrics(
     """
     Compute and format sales metrics, plus percentage deltas versus a prior period.
 
-    Calculates total and average units sold and revenue for the current dataset,
-    then compares the current averages to those from a previous (last-event)
-    dataset, expressing the comparison as percentage changes.
+    Calculates total and average units sold and revenue for the current dataset, then
+    compares the current averages to those from a previous (last-event) dataset,
+    expressing the comparison as percentage changes.
 
     Args:
         all_orders_df:
@@ -47,9 +52,12 @@ def compute_metrics(
             A dictionary mapping metric names to formatted string values:
 
             - **total_units_sold** (*str*): Total units sold, with thousands separator.
-            - **total_revenue** (*str*): Total revenue, prefixed with `$` and two decimals.
-            - **avg_units_sold** (*str*): Average units sold per hour, with thousands separator.
-            - **avg_revenue** (*str*): Average revenue per hour, prefixed with `$` and two decimals.
+            - **total_revenue** (*str*): Total revenue, prefixed with `$` and two
+              decimals.
+            - **avg_units_sold** (*str*): Average units sold per hour, with thousands
+              separator.
+            - **avg_revenue** (*str*): Average revenue per hour, prefixed with `$` and
+              two decimals.
             - **diff_units_vs_last** (*str*): Percentage change in average units sold
               versus last event, with two decimals and a `%` sign.
             - **diff_revenue_vs_last** (*str*): Percentage change in average revenue

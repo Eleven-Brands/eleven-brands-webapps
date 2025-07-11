@@ -5,15 +5,18 @@ This module provides functions to render actual-vs-forecast sales charts for a g
 region and date, using Altair and Streamlit.
 
 Public API:
-     hourly_chart(...) -> None
-          - Render an Altair chart of hourly actual-vs-forecast-vs-target quantities into the provided container.
-     event_chart(...) -> None:
-          - Render an Altair chart of daily actual-vs-forecast-vs-target quantities into the provided container.
+    hourly_chart(...) - Render an Altair chart of hourly actual-vs-forecast-vs-target
+                        quantities into the provided container.
+    event_chart(...) - Render an Altair chart of daily actual-vs-forecast-vs-target
+                       quantities into the provided container.
 
 Internal Helpers:
-    `_df_for_plot(df, actual_col, forecast_col)`: Select and return only the sales_region, local_date, local_hour, actual, and forecast columns.
-    `_to_long_actual_forecast(df, actual_col, forecast_col)`: Reshape a wide DataFrame into long form for Altair plotting (columns: local_hour, type, qty).
-    `_build_altair(df_long, actual_col, forecast_col)`: Build a layered Altair line chart with solid line for actual data and dashed line for forecast.
+    `_df_for_plot(df, actual_col, forecast_col)`: Select and return only the
+        sales_region, local_date, local_hour, actual, and forecast columns.
+    `_to_long_actual_forecast(df, actual_col, forecast_col)`: Reshape a wide DataFrame
+        into long form for Altair plotting (columns: local_hour, type, qty).
+    `_build_altair(df_long, actual_col, forecast_col)`: Build a layered Altair line
+        chart with solid line for actual data and dashed line for forecast.
 """
 
 import streamlit as st
@@ -48,29 +51,31 @@ def hourly_chart(
     has_display_labels: bool = False,
 ) -> None:
     """
-    Render an hourly actual-vs-forecast-vs-target sales chart into the given Streamlit container.
+    Render an hourly actual-vs-forecast-vs-target sales chart into the given Streamlit
+    container.
 
     This function:
-         1. Builds combined actual and forecast and target DataFrame via build_event_sales_df().
-         2. Filters rows for the selected region and date.
-         3. Transforms to long form and checks for data availability.
-         4. Displays an info message if no data, else renders an Altair chart.
+        1. Builds combined actual and forecast and target DataFrame via
+           build_event_sales_df().
+        2. Filters rows for the selected region and date.
+        3. Transforms to long form and checks for data availability.
+        4. Displays an info message if no data, else renders an Altair chart.
 
     Args:
-         st_container: Streamlit container (e.g., st.container(), st.columns(3)) for rendering.
-         all_orders_df: Raw orders DataFrame with necessary fields.
-         date_col: Column name for local date in all_orders_df.
-         sales_region_col: Column name for sales region in all_orders_df.
-         selected_region: The region code to filter data.
-         selected_date: The date to filter data.
-         actual_col: Column name for actual quantity.
-         forecast_col: Column name for forecast quantity.
-         target_col: Column name for target quantity.
-         is_percent: Boolean for formatting as percentage.
-         has_display_labels: Boolean whether to display labels in charts.
+        st_container: Streamlit container (e.g., st.columns(3)) for rendering.
+        all_orders_df: Raw orders DataFrame with necessary fields.
+        date_col: Column name for local date in all_orders_df.
+        sales_region_col: Column name for sales region in all_orders_df.
+        selected_region: The region code to filter data.
+        selected_date: The date to filter data.
+        actual_col: Column name for actual quantity.
+        forecast_col: Column name for forecast quantity.
+        target_col: Column name for target quantity.
+        is_percent: Boolean for formatting as percentage.
+        has_display_labels: Boolean whether to display labels in charts.
 
     Returns:
-         None. Renders chart or info message in the provided container.
+        None. Renders chart or info message in the provided container.
     """
 
     new_build = build_event_sales_df(all_orders_df, SALES_REGIONS, event_dates)
@@ -114,28 +119,30 @@ def event_chart(
     target_col: str,
 ) -> None:
     """
-    Render an daily actual-vs-forecast-vs-target sales chart into the given Streamlit container.
+    Render an daily actual-vs-forecast-vs-target sales chart into the given Streamlit
+    container.
 
     This function:
-         1. Builds combined actual and forecast and target DataFrame via build_event_sales_df().
-         2. Filters rows for the selected region.
-         3. Transforms to long form and checks for data availability.
+        1. Builds combined actual and forecast and target DataFrame via
+           build_event_sales_df().
+        2. Filters rows for the selected region.
+        3. Transforms to long form and checks for data availability.
 
     Args:
-         st_container: Streamlit container (e.g., st.container(), st.columns(3)) for rendering.
-         all_orders_df: Raw orders DataFrame with necessary fields.
-         date_col: Column name for local date in all_orders_df.
-         sales_region_col: Column name for sales region in all_orders_df.
-         selected_region: The region code to filter data.
-         selected_date: The date to filter data.
-         actual_col: Column name for actual quantity.
-         forecast_col: Column name for forecast quantity.
-         target_col: Column name for target quantity.
-         is_percent: Boolean for formatting as percentage.
-         has_display_labels: Boolean whether to display labels in charts.
+        st_container: Streamlit container (e.g., st.columns(3)) for rendering.
+        all_orders_df: Raw orders DataFrame with necessary fields.
+        date_col: Column name for local date in all_orders_df.
+        sales_region_col: Column name for sales region in all_orders_df.
+        selected_region: The region code to filter data.
+        selected_date: The date to filter data.
+        actual_col: Column name for actual quantity.
+        forecast_col: Column name for forecast quantity.
+        target_col: Column name for target quantity.
+        is_percent: Boolean for formatting as percentage.
+        has_display_labels: Boolean whether to display labels in charts.
 
     Returns:
-         None. Renders chart in the provided container.
+        None. Renders chart in the provided container.
     """
 
     new_build = build_event_sales_df(all_orders_df, SALES_REGIONS, event_dates)
@@ -237,7 +244,7 @@ def _df_for_plot(df, actual_col, forecast_col, target_col):
          target_col: Column name for target quantity.
 
     Returns:
-         Subset with ['sales_region', 'local_date', 'local_hour', actual_col, forecast_col].
+         Subset with ['sales_region','local_date','local_hour',actual_col,forecast_col].
     """
 
     return df[

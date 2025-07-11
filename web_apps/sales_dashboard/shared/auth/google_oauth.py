@@ -49,13 +49,13 @@ def show_user_sidebar(user, avatar_width: int = 25):
 
     with st.sidebar:
         img_html = f"""
-               <div 
-                    style=" 
-                         display: flex; 
-                         align-items: center; 
-                         gap: 8px; 
-                         width: 100%; 
-                         margin-bottom: 6px; 
+               <div
+                    style="
+                         display: flex;
+                         align-items: center;
+                         gap: 8px;
+                         width: 100%;
+                         margin-bottom: 6px;
                     ">
                     <img
                          src="{user.picture}"

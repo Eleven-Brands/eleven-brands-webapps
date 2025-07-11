@@ -35,12 +35,19 @@ Dependencies:
     - pandas for DataFrame manipulations
     - numpy for conditional selection and arithmetic
     - config.event: EVENT_DATES, EVENT_NAME for mapping event days
-    - shared.builders.forecasting.compute_hourly_share_profile for average-share profiles
-    - shared.builders.all_orders.build_all_orders_actual_event for actual event thresholds
-    - shared.builders.target_sales.build_target_sales_by_region_date for target sales for current event
+    - shared.builders.forecasting.compute_hourly_share_profile for average-share
+      profiles
+    - shared.builders.all_orders.build_all_orders_actual_event for actual event
+      thresholds
+    - shared.builders.target_sales.build_target_sales_by_region_date for target sales
+      for current event
 
 Usage:
-    df = _build_all_orders_actual_with_forecast(all_orders_df, SALES_REGIONS, EVENT_DATES)
+    df = _build_all_orders_actual_with_forecast(
+            all_orders_df,
+            SALES_REGIONS,
+            EVENT_DATES
+        )
 """
 
 import streamlit as st
@@ -52,10 +59,7 @@ import datetime
 from config.event import EVENT_DATES, EVENT_NAME
 from shared.builders.forecasting import compute_hourly_share_profile
 from shared.builders.all_orders import build_all_orders_actual_event
-from shared.builders.target_sales import (
-    build_target_sales_by_region_date,
-    build_target_sales_by_region_sku_date,
-)
+from shared.builders.target_sales import build_target_sales_by_region_date
 
 
 # ─── PUBLIC API ───────────────────────────────────────────────────────────────────────
@@ -159,8 +163,9 @@ def _add_forecast_cols(
         6. Calculates forecast_qty = avg_share * T_hat.
 
     Args:
-        actual_df: DataFrame with actual 'quantity', 'sales_region', 'local_date', 'local_hour'.
-        thresholds_df: DataFrame with 'sales_region', 'last_date', 'last_hour'.
+        actual_df: DataFrame with actual 'quantity','sales_region','local_date',
+                   'local_hour'.
+        thresholds_df: DataFrame with 'sales_region','last_date','last_hour'.
 
     Returns:
         A dataFrame including columns:

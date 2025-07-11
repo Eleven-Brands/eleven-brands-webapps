@@ -37,8 +37,8 @@ def build_committed_units_by_region_sku_date():
     Aggregate committed units by sales region, amazon_family, sku, event date.
 
     Returns:
-        MultiIndexed by ['sales_region', 'amazon_family', 'sku', 'event_date'], containing
-        'committed_units' as summed values.
+        MultiIndexed by ['sales_region', 'amazon_family', 'sku', 'event_date'],
+        containing 'committed_units' as summed values.
     """
 
     target_df = _get_committed_units_with_product_model()

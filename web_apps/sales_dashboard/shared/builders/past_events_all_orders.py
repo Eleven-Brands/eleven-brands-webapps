@@ -36,23 +36,23 @@ def get_past_events_all_order_analysis():
     """
     Load and aggregate past-events orders by region, event, date/time, and product.
 
-    Retrieves the raw past-events orders DataFrame, enriches it with product model metadata,
-    then groups and sums `quantity` and `item_price` by:
-         - sales_region (str)
-         - sales_country_code (str)
-         - event_name (str)
-         - local_date (datetime.date)
-         - local_hour (int)
-         - amazon_family (str)
-         - native_family (str)
-         - sku (str)
+    Retrieves the raw past-events orders DataFrame, enriches it with product model
+    metadata, then groups and sums `quantity` and `item_price` by:
+        - sales_region (str)
+        - sales_country_code (str)
+        - event_name (str)
+        - local_date (datetime.date)
+        - local_hour (int)
+        - amazon_family (str)
+        - native_family (str)
+        - sku (str)
 
     Returns:
-         Aggregated DataFrame with columns [
-              'sales_region', 'sales_country_code', 'event_name',
-              'local_date', 'local_hour', 'amazon_family',
-              'native_family', 'sku', 'quantity', 'item_price'
-         ]
+        Aggregated DataFrame with columns [
+            'sales_region', 'sales_country_code', 'event_name',
+            'local_date', 'local_hour', 'amazon_family',
+            'native_family', 'sku', 'quantity', 'item_price'
+        ]
     """
 
     df = (
@@ -80,16 +80,16 @@ def get_last_event_all_order_analysis(event_name: str, last_year: int):
     Filter past-events order analysis for a specific event name and year.
 
     Args:
-         event_name: Name of the event to filter.
-         last_year: Year of interest (e.g., 2024).
+        event_name: Name of the event to filter.
+        last_year: Year of interest (e.g., 2024).
 
     Returns:
-         pd.DataFrame: Filtered DataFrame containing orders only for the specified event and year,
-         with columns including:
-              - 'sales_region', 'sales_country_code', 'event_name',
-              - 'local_date' (datetime.date), 'local_hour' (int),
-              - 'amazon_family', 'native_family', 'sku',
-              - 'quantity', 'item_price'
+        Filtered DataFrame containing orders only for the specified event and year, with
+        columns including:
+            - 'sales_region', 'sales_country_code', 'event_name',
+            - 'local_date' (datetime.date), 'local_hour' (int),
+            - 'amazon_family', 'native_family', 'sku',
+            - 'quantity', 'item_price'
     """
 
     df = get_past_events_all_order_analysis()
@@ -120,28 +120,29 @@ def _get_past_events_all_orders_temp_df() -> pd.DataFrame:
 
 def _get_all_orders_with_product_model_df() -> pd.DataFrame:
     """
-    Enrich past-events orders with product model metadata and derive local order time components.
+    Enrich past-events orders with product model metadata and derive local order time
+    components.
 
     Steps:
-         1. Load raw past-events orders via `_get_past_events_all_orders_temp_df()`.
-         2. Load the product model DataFrame via `get_product_model()`.
-         3. Validate required join keys:
-              - all_orders: ['sku', 'sales_country']
-              - product_model: ['sku', 'sales_country_code']
-         4. Perform left join on ['sku','sales_country'] -> ['sku','sales_country_code'].
-         5. Drop the 'sales_country' column.
-         6. Rename 'date_all_orders' to 'local_date'.
-         7. Reset index to a fresh sequence.
-         8. Parse 'time_all_orders' into a datetime and extract hour into 'local_hour'.
+        1. Load raw past-events orders via `_get_past_events_all_orders_temp_df()`.
+        2. Load the product model DataFrame via `get_product_model()`.
+        3. Validate required join keys:
+            - all_orders: ['sku', 'sales_country']
+            - product_model: ['sku', 'sales_country_code']
+        4. Perform left join on ['sku','sales_country'] -> ['sku','sales_country_code'].
+        5. Drop the 'sales_country' column.
+        6. Rename 'date_all_orders' to 'local_date'.
+        7. Reset index to a fresh sequence.
+        8. Parse 'time_all_orders' into a datetime and extract hour into 'local_hour'.
 
     Returns:
-         pd.DataFrame: Enriched DataFrame with columns:
-              - local_date (datetime.date)
-              - time_all_orders (str)
-              - local_hour (int)
-              - sales_region, sales_country_code, event_name
-              - amazon_family, native_family, sku, quantity, item_price
-              - product model attributes
+        Enriched DataFrame with columns:
+            - local_date (datetime.date)
+            - time_all_orders (str)
+            - local_hour (int)
+            - sales_region, sales_country_code, event_name
+            - amazon_family, native_family, sku, quantity, item_price
+            - product model attributes
 
     Raises:
          KeyError: If any required join keys are missing.

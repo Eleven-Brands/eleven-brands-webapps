@@ -127,12 +127,15 @@ CSV_CONFIG: Dict[str, Any] = {
 @st.cache_resource
 def get_drive_service() -> Resource:
     """
-    Instantiate and cache a Google Drive v3 service client using service account credentials.
+    Instantiate and cache a Google Drive v3 service client using service account
+    credentials.
 
     On first call, this function:
-      1. Reads the GCP service account info from `st.secrets["gcp_service_account"]`.
-      2. Creates `google.oauth2.service_account.Credentials` scoped for readonly Drive access.
-      3. Builds and returns a `googleapiclient.discovery.Resource` for the Drive v3 API.
+        1. Reads the GCP service account info from `st.secrets["gcp_service_account"]`.
+        2. Creates `google.oauth2.service_account.Credentials` scoped for readonly
+           Drive access.
+        3. Builds and returns a `googleapiclient.discovery.Resource` for the Drive v3
+           API.
 
     The result is cached as a resource, so subsequent calls within the same session
     reuse the same client instance rather than rebuilding it.
@@ -217,13 +220,14 @@ def _load_sheet_from_drive(
                     f"{max_retries} attempts: {e}"
                 ) from e
 
-        # Otherwise, wait then retry
-        wait_seconds = backoff_factor * (2 ** (attempt - 1))
-        st.warning(
-            f"Attempt {attempt} for file {file_id} failed: {e.status_code} {e.error_details}. "
-            f"Retrying in {wait_seconds:.1f}s…"
-        )
-        time.sleep(wait_seconds)
+            # Otherwise, wait then retry
+            wait_seconds = backoff_factor * (2 ** (attempt - 1))
+            st.warning(
+                f"Attempt {attempt} for file {file_id} failed: "
+                f"{e.status_code} {e.error_details}. "
+                f"Retrying in {wait_seconds:.1f}s…"
+            )
+            time.sleep(wait_seconds)
 
 
 def _load_into_session() -> None:

@@ -20,9 +20,9 @@ def get_temp_df(key: str, cols: list) -> pd.DataFrame:
     """
     Load and validate the raw temp DataFrame from session state.
 
-    Retrieves a DataFrame stored under the given session key (with system columns stripped),
-    ensures it contains exactly the required columns, and returns a copy containing only
-    those columns.
+    Retrieves a DataFrame stored under the given session key (with system columns
+    stripped), ensures it contains exactly the required columns, and returns a copy
+    containing only those columns.
 
     Args:
          key: The session_state key where the raw temp DataFrame is stored
@@ -51,10 +51,10 @@ def _get_session_df(key: str) -> pd.DataFrame:
     Retrieve a DataFrame stored in Streamlit's session_state by key.
 
     Args:
-         key (str): The key in Streamlit session_state where the DataFrame data is stored.
+         key: The key in Streamlit session_state where the DataFrame data is stored.
 
     Returns:
-         pd.DataFrame: The DataFrame corresponding to the given key.
+         The DataFrame corresponding to the given key.
 
     Raises:
          KeyError: If the specified key is not found in session_state.
@@ -73,10 +73,10 @@ def _remove_system_columns(df: pd.DataFrame) -> pd.DataFrame:
     Filters out columns specified in SYSTEM_COLS from the DataFrame.
 
     Args:
-         df (pd.DataFrame): The DataFrame to clean.
+         df: The DataFrame to clean.
 
     Returns:
-         pd.DataFrame: A new DataFrame without system columns.
+         A new DataFrame without system columns.
     """
 
     return df[[col for col in df.columns if col not in SYSTEM_COLS]]
@@ -90,13 +90,13 @@ def _load_source(key: str) -> pd.DataFrame:
     then removes any columns listed in SYSTEM_COLS.
 
     Args:
-         key (str): The key in Streamlit session_state where the DataFrame data is stored.
+         key: The key in Streamlit session_state where the DataFrame data is stored.
 
     Returns:
-         pd.DataFrame: The cleaned DataFrame without system columns.
+         The cleaned DataFrame without system columns.
 
     Raises:
-         KeyError: If the specified key is not found in session_state.
+         If the specified key is not found in session_state.
     """
 
     return _remove_system_columns(_get_session_df(key))

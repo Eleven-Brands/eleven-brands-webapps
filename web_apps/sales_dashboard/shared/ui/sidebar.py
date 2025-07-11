@@ -3,15 +3,15 @@ sidebars.py
 
 Sidebar utilities for the Sales Dashboard Streamlit app.
 
-This module provides the `sidebar_selector` helper to render a refresh button and Prime Day date selector
-in the Streamlit sidebar, persisting the selection in session_state and returning the chosen date and event day.
+This module provides the `sidebar_selector` helper to render a refresh button and
+Prime Day date selector in the Streamlit sidebar, persisting the selection in
+session_state and returning the chosen date and event day.
 """
 
 import streamlit as st
 import datetime
 from typing import Tuple
 
-from shared.data_io import load_all_data
 from shared.data_io import CSV_CONFIG
 
 
@@ -23,7 +23,8 @@ def sidebar_selector(event_dates: dict) -> Tuple[datetime.date, int]:
     Render event date selector and refresh control in the Streamlit sidebar.
 
     Args:
-         event_dates: Mapping of label strings to datetime.date objects for available events.
+        event_dates: Mapping of label strings to datetime.date objects for available
+                     events.
 
     Returns:
          The selected date and the corresponding event day index (1-based).
@@ -42,13 +43,13 @@ def sidebar_selector(event_dates: dict) -> Tuple[datetime.date, int]:
           <style>
           div.stButton > button[disabled] {
                background-color: #98b9d0 !important;
-               color:            #4c5966 !important;    /* White text for max contrast */
-               font-weight:      bold      !important;   /* Make it bolder */
-               font-size:        1.1rem     !important;  /* Slightly larger */
-               text-shadow:      1px 1px 2px rgba(50,50,50,0.5) !important; /* Subtle shadow */
+               color:            #4c5966 !important;
+               font-weight:      bold      !important;
+               font-size:        1.1rem     !important;
+               text-shadow:      1px 1px 2px rgba(50,50,50,0.5) !important;
                border-color:     #ffffff   !important;
                box-shadow:       none      !important;
-               text-transform:   uppercase !important; 
+               text-transform:   uppercase !important;
           }
           </style>
           """,
@@ -78,7 +79,8 @@ def sidebar_refresh() -> None:
     Render refresh control in the Streamlit sidebar.
 
     Returns:
-         The refrsh contol buttonselected date and the corresponding event day index (1-based).
+        The refrsh contol buttonselected date and the corresponding event day index
+        (1-based).
     """
 
     with st.sidebar:

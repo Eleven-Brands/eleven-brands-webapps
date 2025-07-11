@@ -12,16 +12,24 @@ into each order's local timezone. It exposes three public functions:
 Returns fully prepared pandas DataFrames with additional local datetime fields.
 
 Internally, the module defines:
-     - ALL_ORDER_COLS & SALES_CHANNEL: required schema and sales channel definitions imported from config.
+     - ALL_ORDER_COLS & SALES_CHANNEL: required schema and sales channel definition
+       imported from config.
      - _get_combined_all_orders_temp_df(): concatenate regional temp DataFrames.
-     - _get_all_orders_with_product_model_df(): enrich with sales channel and product model metadata.
-     - _convert_utc_to_local_timestamp(row): convert a single UTC Timestamp to local timezone.
-     - _get_all_orders_with_local_datetime_df(): apply timezone conversion and extract local date/time/hour.
-     - _filter_orders_by_regions_and_dates(df, regions, dates): filter orders by region and dates.
-     - _aggregate_quantity_by_region_date_hour(df): aggregate quantities by region, date, and hour.
-     - _fill_region_date_hour_grid(agg_df, regions, dates): fill missing region-date-hour combinations.
+     - _get_all_orders_with_product_model_df(): enrich with sales channel and product
+       model metadata.
+     - _convert_utc_to_local_timestamp(row): convert a single UTC Timestamp to local
+       timezone.
+     - _get_all_orders_with_local_datetime_df(): apply timezone conversion and extract
+       local date/time/hour.
+     - _filter_orders_by_regions_and_dates(df, regions, dates): filter orders by region
+       and dates.
+     - _aggregate_quantity_by_region_date_hour(df): aggregate quantities by region,
+       date, and hour.
+     - _fill_region_date_hour_grid(agg_df, regions, dates): fill missing
+       region-date-hour combinations.
      - _add_daily_cumulative(df): add cumulative daily quantities.
-     - _get_last_actual_thresholds_by_region(agg_df): compute last available date/hour per region.
+     - _get_last_actual_thresholds_by_region(agg_df): compute last available date/hour
+       per region.
 
 Dependencies:
      - pandas for DataFrame operations
@@ -52,8 +60,8 @@ def build_all_orders_full() -> pd.DataFrame:
     Cached Function
     Load and aggregate all orders by region, date/time and product.
 
-    This function retrieves the all orders DataFrame with local datetime fields, then groups
-    & sums `quantity` and `item_price` by:
+    This function retrieves the all orders DataFrame with local datetime fields, then
+    groups & sums `quantity` and `item_price` by:
          - sales_region
          - sales_country_code
          - local_date
@@ -72,7 +80,8 @@ def build_all_orders_full() -> pd.DataFrame:
               - native_family (str): Internal immutable product family classification.
               - sku (str): Stock-Keeping Unit identifier.
               - quantity (int): Total quantity sold in that hour for that region.
-              - item_price (float): Total sum of item_price in that hour for that region.
+              - item_price (float): Total sum of item_price in that hour for that
+                region.
     """
 
     df = (
@@ -100,8 +109,8 @@ def build_all_orders_region_date_hour() -> pd.DataFrame:
     Cached Function
     Load and aggregate all orders by local date, hour, and region.
 
-    This function retrieves the all orders DataFrame with local datetime fields, then groups
-    & sums `quantity`by:
+    This function retrieves the all orders DataFrame with local datetime fields, then
+    groups & sums `quantity`by:
          - sales_region
          - local_date
          - local_hour
@@ -326,12 +335,14 @@ def _filter_orders_by_regions_and_dates(
     Filter orders to specified regions and dates.
 
     Args:
-         df: All Orders DataFrame with columns ['sales_region', 'local_date', 'local_hour', 'quantity'].
-         regions: Sales region codes to include.
-         dates): Local dates to include.
+        df: All Orders DataFrame with columns
+            ['sales_region', 'local_date', 'local_hour', 'quantity'].
+        regions: Sales region codes to include.
+        dates): Local dates to include.
 
     Returns:
-         Filtered DataFrame with columns ['sales_region','local_date','local_hour','quantity'].
+        Filtered DataFrame with columns
+        ['sales_region','local_date','local_hour','quantity'].
     """
 
     mask = df["sales_region"].isin(regions) & df["local_date"].isin(dates)
@@ -347,10 +358,11 @@ def _aggregate_quantity_by_region_date_hour(df: pd.DataFrame) -> pd.DataFrame:
     Aggregate quantity by region, date, and hour.
 
     Args:
-         df: DataFrame with ['sales_region','local_date','local_hour','quantity'].
+        df: DataFrame with ['sales_region','local_date','local_hour','quantity'].
 
     Returns:
-         Aggregated DataFrame with columns ['sales_region','local_date','local_hour','quantity'].
+        Aggregated DataFrame with columns
+        ['sales_region','local_date','local_hour','quantity'].
     """
 
     return df.groupby(["sales_region", "local_date", "local_hour"], as_index=False).agg(
@@ -365,12 +377,14 @@ def _fill_region_date_hour_grid(
     Fill missing region-date-hour combinations with zero quantity.
 
     Args:
-         agg_df: Aggregated DataFrame with ['sales_region','local_date','local_hour','quantity'].
-         regions: Sales region codes.
-         dates: Local dates.
+        agg_df: Aggregated DataFrame with
+                ['sales_region','local_date','local_hour','quantity'].
+        regions: Sales region codes.
+        dates: Local dates.
 
     Returns:
-         DataFrame covering every region/date/hour (0-23) with missing quantities set to 0.
+        DataFrame covering every region/date/hour (0-23) with missing quantities
+        set to 0.
     """
 
     hours = range(24)
@@ -412,11 +426,12 @@ def _get_last_actual_thresholds_by_region(agg_df: pd.DataFrame) -> pd.DataFrame:
     Compute the latest available date and hour per sales region.
 
     Args:
-         agg_df: Aggregated DataFrame with ['sales_region','local_date','local_hour',...].
+        agg_df: Aggregated DataFrame with
+        ['sales_region','local_date','local_hour',...].
 
     Returns:
-         DataFrame with columns ['sales_region','last_date','last_hour'] indicating the
-         most recent values.
+        DataFrame with columns ['sales_region','last_date','last_hour'] indicating the
+        most recent values.
     """
 
     def last_for_region(df: pd.DataFrame) -> pd.Series:

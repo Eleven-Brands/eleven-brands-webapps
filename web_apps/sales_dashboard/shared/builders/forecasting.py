@@ -1,9 +1,10 @@
 """
 forecasting.py
 
-This module provides utilities to load past hourly sales data for specific events, compute normalized hourly share profiles,
-and generate combined actual-versus-forecast sales profiles by hour for a given region, event-day, and date. It is
-optimized for use in a Streamlit app with caching applied to the main public interface.
+This module provides utilities to load past hourly sales data for specific events,
+compute normalized hourly share profiles, and generate combined actual-versus-forecast
+sales profiles by hour for a given region, event-day, and date. It is optimized for use
+in a Streamlit app with caching applied to the main public interface.
 
 Public API:
     build_region_forecast
@@ -43,30 +44,29 @@ def compute_hourly_share_profile(event_name: str) -> pd.DataFrame:
     """
     Build a normalized hourly share profile for a given event across regions.
 
-    This internal helper fetches past hourly sales for the specified event,
-    pivots it into a 24-hour matrix by (event_date, sales_region, event_day),
-    converts volumes into per-hour share vectors, and then averages those
-    shares across historical days according to AVERAGE_MAPPING. The result is
-    a DataFrame of mean share by (sales_region, event_day, local_hour).
+    This internal helper fetches past hourly sales for the specified event, pivots it
+    into a 24-hour matrix by (event_date, sales_region, event_day), converts volumes
+    into per-hour share vectors, and then averages those shares across historical days
+    according to AVERAGE_MAPPING. The result is a DataFrame of mean share by
+    (sales_region, event_day, local_hour).
 
     Args:
-         event_name:
-              Name of the event to process (e.g. "Prime Day").
+        event_name: Name of the event to process (e.g. "Prime Day").
 
     Returns:
-         A DataFrame sorted by ['sales_region', 'event_day', 'local_hour']
-         with columns:
-         - sales_region: region code
-         - event_day: mapped event day for forecasting
-         - local_hour: hour of day (0-23)
-         - avg_share: mean share of hourly volume for that region/day
+        A DataFrame sorted by ['sales_region', 'event_day', 'local_hour']
+        with columns:
+            - sales_region: region code
+            - event_day: mapped event day for forecasting
+            - local_hour: hour of day (0-23)
+            - avg_share: mean share of hourly volume for that region/day
 
     Notes:
-         - Internally calls `_get_past_hourly_sales_for_event` to load and
-              aggregate quantities.
-         - Uses the global `MAPPING_DF` (built from AVERAGE_MAPPING) to map
-              historical event days onto the final “forecast” event_day values.
-         - Rows with zero total volume will produce zero share for all hours.
+        - Internally calls `_get_past_hourly_sales_for_event` to load and
+          aggregate quantities.
+        - Uses the global `MAPPING_DF` (built from AVERAGE_MAPPING) to map
+          historical event days onto the final “forecast” event_day values.
+        - Rows with zero total volume will produce zero share for all hours.
     """
 
     past_event_df = _get_past_hourly_sales_for_event(event_name)

@@ -261,7 +261,7 @@ with col_units_value:
         )
     else:
         u_val = st.number_input(
-            f"Units %",
+            "Units %",
             min_value=0.0,
             max_value=u_max,
             value=0.0,
@@ -273,7 +273,7 @@ with col_units_value:
 with col_committed_units_value:
     comm_u_max = float(event_sales["progress_units_sold"].max())
     comm_u_val = st.number_input(
-        f"Min. Comm. Units",
+        "Min. Comm. Units",
         min_value=0.0,
         max_value=comm_u_max,
         value=0.0,
@@ -299,7 +299,7 @@ with col_revenue_value:
         )
     else:
         r_val = st.number_input(
-            f"Revenue %",
+            "Revenue %",
             min_value=0.0,
             max_value=r_max,
             value=0.0,
