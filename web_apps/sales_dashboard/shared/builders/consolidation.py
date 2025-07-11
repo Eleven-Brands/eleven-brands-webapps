@@ -6,8 +6,8 @@ final time-series quantities for charting and analysis.
 
 Public API:
     build_event_sales_df(
-        all_orders_df: pd.DataFrame, 
-        sales_regions: List[str], 
+        all_orders_df: pd.DataFrame,
+        sales_regions: List[str],
         event_dates: List[datetime.date]
     ) -> pd.DataFrame:
         - Adds the target columns to the final dataframe
@@ -52,17 +52,20 @@ import datetime
 from config.event import EVENT_DATES, EVENT_NAME
 from shared.builders.forecasting import compute_hourly_share_profile
 from shared.builders.all_orders import build_all_orders_actual_event
-from shared.builders.target_sales import build_target_sales_by_region_date, build_target_sales_by_region_sku_date
-
+from shared.builders.target_sales import (
+    build_target_sales_by_region_date,
+    build_target_sales_by_region_sku_date,
+)
 
 
 # ─── PUBLIC API ───────────────────────────────────────────────────────────────────────
 
+
 @st.cache_data
 def build_event_sales_df(
-    all_orders_df: pd.DataFrame, 
-    sales_regions: List[str], 
-    event_dates: List[datetime.date]
+    all_orders_df: pd.DataFrame,
+    sales_regions: List[str],
+    event_dates: List[datetime.date],
 ) -> pd.DataFrame:
     """
     Build a consolidated event-level sales DataFrame.
@@ -85,50 +88,60 @@ def build_event_sales_df(
         Sorted by ['sales_region', 'local_date', 'local_hour'].
     """
 
-    all_orders= _build_all_orders_actual_with_forecast(all_orders_df, sales_regions, event_dates)
+    all_orders = _build_all_orders_actual_with_forecast(
+        all_orders_df, sales_regions, event_dates
+    )
     target_sales = build_target_sales_by_region_date()
 
-    event_sales_df = (
-        all_orders
-        .merge(
-            right=target_sales,
-            how="left",
-            left_on=["sales_region", "local_date"],
-            right_on=["sales_region", "event_date"])
+    event_sales_df = all_orders.merge(
+        right=target_sales,
+        how="left",
+        left_on=["sales_region", "local_date"],
+        right_on=["sales_region", "event_date"],
     )
 
-    event_sales_df["cum_share_actual_quantity"] = event_sales_df["cum_actual_quantity"] / event_sales_df["target_units"].replace(0, np.nan)
-    event_sales_df["cum_share_forecast_quantity"] = event_sales_df["cum_forecast_quantity"] / event_sales_df["target_units"].replace(0, np.nan)
+    event_sales_df["cum_share_actual_quantity"] = event_sales_df[
+        "cum_actual_quantity"
+    ] / event_sales_df["target_units"].replace(0, np.nan)
+    event_sales_df["cum_share_forecast_quantity"] = event_sales_df[
+        "cum_forecast_quantity"
+    ] / event_sales_df["target_units"].replace(0, np.nan)
 
-    event_sales_df["target_quantity"] = event_sales_df["target_units"] *event_sales_df["avg_share"]
+    event_sales_df["target_quantity"] = (
+        event_sales_df["target_units"] * event_sales_df["avg_share"]
+    )
 
     event_sales_df = event_sales_df.sort_values(
         ["sales_region", "local_date", "local_hour"]
     )
 
     # cumulative sum of target_quantity
-    event_sales_df["cum_target_quantity"] = (
-        event_sales_df
-        .groupby(["sales_region", "local_date"])["target_quantity"]
-        .cumsum()
-    )
+    event_sales_df["cum_target_quantity"] = event_sales_df.groupby(
+        ["sales_region", "local_date"]
+    )["target_quantity"].cumsum()
 
     event_sales_df["total_share_target_quantity"] = 1
 
-    cols =[
+    cols = [
         "sales_region",
         "local_date",
         "local_hour",
-        "actual_quantity", "forecast_quantity", "target_quantity",
-        "cum_actual_quantity", "cum_forecast_quantity", "cum_target_quantity",
-        "cum_share_actual_quantity", "cum_share_forecast_quantity", "total_share_target_quantity"
+        "actual_quantity",
+        "forecast_quantity",
+        "target_quantity",
+        "cum_actual_quantity",
+        "cum_forecast_quantity",
+        "cum_target_quantity",
+        "cum_share_actual_quantity",
+        "cum_share_forecast_quantity",
+        "total_share_target_quantity",
     ]
 
     return event_sales_df[cols]
 
 
-
 # ─── BUILD DATAFRAME WITH FORECAST ────────────────────────────────────────────────────
+
 
 def _add_forecast_cols(
     actual_df: pd.DataFrame,
@@ -159,7 +172,7 @@ def _add_forecast_cols(
 
     event_dates = list(EVENT_DATES.values())
     # Map local_date → event_day
-    date_to_day = {d: i+1 for i, d in enumerate(event_dates)}
+    date_to_day = {d: i + 1 for i, d in enumerate(event_dates)}
     actual = actual_df.copy()
     actual["event_day"] = actual["local_date"].map(date_to_day)
 
@@ -167,15 +180,13 @@ def _add_forecast_cols(
     df = actual.merge(
         compute_hourly_share_profile(EVENT_NAME),
         on=["sales_region", "event_day", "local_hour"],
-        how="left"
+        how="left",
     )
 
     # Compute the cumulative average‐share up to each hour
-    df["cum_avg_share"] = (
-        df
-        .groupby(["sales_region", "local_date"])["avg_share"]
-        .cumsum()
-    )
+    df["cum_avg_share"] = df.groupby(["sales_region", "local_date"])[
+        "avg_share"
+    ].cumsum()
 
     # MERGE IN your per‐region cutoffs
     thr = thresholds_df.rename(
@@ -185,20 +196,17 @@ def _add_forecast_cols(
 
     # Extract per‐region T_hat
     cutoff = (
-        df
-        .query("local_date == cutoff_date and local_hour == cutoff_hour")
-        .loc[:, ["sales_region", "local_date","cum_quantity", "cum_avg_share"]]
-        .rename(columns={
-            "cum_quantity": "cum_actual",
-            "cum_avg_share": "cum_share"
-        })
+        df.query("local_date == cutoff_date and local_hour == cutoff_hour")
+        .loc[:, ["sales_region", "local_date", "cum_quantity", "cum_avg_share"]]
+        .rename(columns={"cum_quantity": "cum_actual", "cum_avg_share": "cum_share"})
     )
     cutoff["T_hat"] = cutoff["cum_actual"] / cutoff["cum_share"].replace(0, np.nan)
 
     # Compute forecast
     df = df.merge(
         cutoff[["sales_region", "local_date", "T_hat"]],
-        on=["sales_region", "local_date"], how="left"
+        on=["sales_region", "local_date"],
+        how="left",
     )
     df["forecast_qty"] = df["avg_share"] * df["T_hat"]
 
@@ -228,56 +236,52 @@ def _add_cutoff_quantities(df: pd.DataFrame) -> pd.DataFrame:
     """
 
     # Build actual vs. forecast masks
-    mask_actual = (
-        (df["local_date"] < df["cutoff_date"]) |
-        (
-            (df["local_date"] == df["cutoff_date"]) &
-            (df["local_hour"] <= df["cutoff_hour"])
-        )
+    mask_actual = (df["local_date"] < df["cutoff_date"]) | (
+        (df["local_date"] == df["cutoff_date"])
+        & (df["local_hour"] <= df["cutoff_hour"])
     )
 
-    mask_forecast = (
-        (df["local_date"] > df["cutoff_date"]) |
-        (
-            (df["local_date"] == df["cutoff_date"]) &
-            (df["local_hour"] >= df["cutoff_hour"])
-        )
+    mask_forecast = (df["local_date"] > df["cutoff_date"]) | (
+        (df["local_date"] == df["cutoff_date"])
+        & (df["local_hour"] >= df["cutoff_hour"])
     )
 
     # Combined final quantity
     df["final_quantity"] = np.where(
-        mask_actual,
-        df["quantity"],
-        np.where(mask_forecast, df["forecast_qty"], np.nan)
+        mask_actual, df["quantity"], np.where(mask_forecast, df["forecast_qty"], np.nan)
     )
 
     # Split series
-    df["actual_quantity"]   = df["final_quantity"].where(mask_actual,   np.nan)
+    df["actual_quantity"] = df["final_quantity"].where(mask_actual, np.nan)
     df["forecast_quantity"] = df["final_quantity"].where(mask_forecast, np.nan)
 
     # Cumulative totals
-    df["cum_quantity"] = (
-        df
-        .groupby(["sales_region", "local_date"])["final_quantity"]
-        .cumsum()
-    )
-    df["cum_actual_quantity"]   = df["cum_quantity"].where(mask_actual,   np.nan)
+    df["cum_quantity"] = df.groupby(["sales_region", "local_date"])[
+        "final_quantity"
+    ].cumsum()
+    df["cum_actual_quantity"] = df["cum_quantity"].where(mask_actual, np.nan)
     df["cum_forecast_quantity"] = df["cum_quantity"].where(mask_forecast, np.nan)
 
     cols = [
-        "sales_region", "local_date", "local_hour", 
-        "final_quantity", "cum_quantity",
-        "actual_quantity", "forecast_quantity",
-        "cum_actual_quantity", "cum_forecast_quantity", "avg_share"
+        "sales_region",
+        "local_date",
+        "local_hour",
+        "final_quantity",
+        "cum_quantity",
+        "actual_quantity",
+        "forecast_quantity",
+        "cum_actual_quantity",
+        "cum_forecast_quantity",
+        "avg_share",
     ]
 
     return df[cols]
 
 
 def _build_all_orders_actual_with_forecast(
-        all_orders_df: pd.DataFrame, 
-        sales_regions: List[str], 
-        event_dates: List[datetime.date]
+    all_orders_df: pd.DataFrame,
+    sales_regions: List[str],
+    event_dates: List[datetime.date],
 ) -> pd.DataFrame:
     """
     Cached Function
@@ -307,7 +311,9 @@ def _build_all_orders_actual_with_forecast(
             - cum_forecast_quantity (float)
     """
 
-    df, last_date = build_all_orders_actual_event( all_orders_df, sales_regions, event_dates)
+    df, last_date = build_all_orders_actual_event(
+        all_orders_df, sales_regions, event_dates
+    )
     forecast = _add_forecast_cols(df, last_date)
     add_chart_columns = _add_cutoff_quantities(forecast)
 

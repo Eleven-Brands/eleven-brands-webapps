@@ -11,44 +11,44 @@ import streamlit as st
 
 
 def require_login():
-     """
-     Ensure the user is authenticated before proceeding.
+    """
+    Ensure the user is authenticated before proceeding.
 
-     Checks Streamlit's `st.experimental_user`. If no user is logged in,
-     displays a login prompt and halts further execution.
+    Checks Streamlit's `st.experimental_user`. If no user is logged in,
+    displays a login prompt and halts further execution.
 
-     Returns:
-          The authenticated user object from `st.experimental_user`.
+    Returns:
+         The authenticated user object from `st.experimental_user`.
 
-     Raises:
-          StreamlitStopException: Halts the script when user is not logged in.
-     """
+    Raises:
+         StreamlitStopException: Halts the script when user is not logged in.
+    """
 
-     user = st.user
-     if user is None or not user.is_logged_in:
-          st.title("🔒 Please Authenticate")
-          if st.button("Authenticate"):
-               st.login("google")
-          st.stop()
-     return user
+    user = st.user
+    if user is None or not user.is_logged_in:
+        st.title("🔒 Please Authenticate")
+        if st.button("Authenticate"):
+            st.login("google")
+        st.stop()
+    return user
 
 
 def show_user_sidebar(user, avatar_width: int = 25):
-     """
-     Render the logged-in user's avatar and name in the sidebar with logout.
+    """
+    Render the logged-in user's avatar and name in the sidebar with logout.
 
-     Args:
-          user: The authenticated user object (must have `name` and `picture`).
-          avatar_width: Width of the avatar image in pixels (default: 25).
+    Args:
+         user: The authenticated user object (must have `name` and `picture`).
+         avatar_width: Width of the avatar image in pixels (default: 25).
 
-     Returns:
-          None. Renders HTML and a logout button to the sidebar.
-     """
+    Returns:
+         None. Renders HTML and a logout button to the sidebar.
+    """
 
-     user_name = user.name.replace(" - Eleven Brands", "")
+    user_name = user.name.replace(" - Eleven Brands", "")
 
-     with st.sidebar:
-          img_html = f'''
+    with st.sidebar:
+        img_html = f"""
                <div 
                     style=" 
                          display: flex; 
@@ -65,9 +65,8 @@ def show_user_sidebar(user, avatar_width: int = 25):
                     />
                     <span style="font-weight:500;">{user_name}</span>
                </div>
-          '''
-          st.html(img_html)
+          """
+        st.html(img_html)
 
-
-          if st.button("🚪 Log out"):
-               st.logout() 
+        if st.button("🚪 Log out"):
+            st.logout()

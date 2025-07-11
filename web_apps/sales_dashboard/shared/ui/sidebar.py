@@ -12,33 +12,33 @@ import datetime
 from typing import Tuple
 
 from shared.data_io import load_all_data
-from shared.data_io import CSV_CONFIG 
-
+from shared.data_io import CSV_CONFIG
 
 
 # ─── PUBLIC API ──────────────────────────────────────────────────────────────
 
+
 def sidebar_selector(event_dates: dict) -> Tuple[datetime.date, int]:
-     """
-     Render event date selector and refresh control in the Streamlit sidebar.
+    """
+    Render event date selector and refresh control in the Streamlit sidebar.
 
-     Args:
-          event_dates: Mapping of label strings to datetime.date objects for available events.
+    Args:
+         event_dates: Mapping of label strings to datetime.date objects for available events.
 
-     Returns:
-          The selected date and the corresponding event day index (1-based).
-     """
+    Returns:
+         The selected date and the corresponding event day index (1-based).
+    """
 
-     labels = [ f"{name} - {date.isoformat()}" for name, date in event_dates.items() ]
-     label_to_date = dict(zip(labels, event_dates.values()))
+    labels = [f"{name} - {date.isoformat()}" for name, date in event_dates.items()]
+    label_to_date = dict(zip(labels, event_dates.values()))
 
-     # Initialize default selection to session state
-     if "selected_date_label" not in st.session_state:
-          st.session_state.selected_date_label = labels[0]
+    # Initialize default selection to session state
+    if "selected_date_label" not in st.session_state:
+        st.session_state.selected_date_label = labels[0]
 
-     # Style button selection for UI/UX
-     st.sidebar.markdown(
-          """
+    # Style button selection for UI/UX
+    st.sidebar.markdown(
+        """
           <style>
           div.stButton > button[disabled] {
                background-color: #98b9d0 !important;
@@ -52,38 +52,39 @@ def sidebar_selector(event_dates: dict) -> Tuple[datetime.date, int]:
           }
           </style>
           """,
-          unsafe_allow_html=True,
-     )
+        unsafe_allow_html=True,
+    )
 
-     with st.sidebar:
-          st.button("🔄 Refresh data", on_click=_refresh_data, use_container_width=True)
+    with st.sidebar:
+        st.button("🔄 Refresh data", on_click=_refresh_data, use_container_width=True)
 
-          for label in labels:
-               is_sel = (label == st.session_state.selected_date_label)
-               prime_day_selection = st.button(label, key=label, use_container_width=True,disabled=is_sel )
-               if prime_day_selection:
-                    st.session_state.selected_date_label = label
-                    st.rerun()
+        for label in labels:
+            is_sel = label == st.session_state.selected_date_label
+            prime_day_selection = st.button(
+                label, key=label, use_container_width=True, disabled=is_sel
+            )
+            if prime_day_selection:
+                st.session_state.selected_date_label = label
+                st.rerun()
 
-     selected_label = st.session_state.selected_date_label
-     selected_date  = label_to_date[selected_label]
-     event_day = list(event_dates.values()).index(selected_date) + 1
-     return selected_date, event_day
-
+    selected_label = st.session_state.selected_date_label
+    selected_date = label_to_date[selected_label]
+    event_day = list(event_dates.values()).index(selected_date) + 1
+    return selected_date, event_day
 
 
 def sidebar_refresh() -> None:
-     """
-     Render refresh control in the Streamlit sidebar.
+    """
+    Render refresh control in the Streamlit sidebar.
 
-     Returns:
-          The refrsh contol buttonselected date and the corresponding event day index (1-based).
-     """
+    Returns:
+         The refrsh contol buttonselected date and the corresponding event day index (1-based).
+    """
 
-     with st.sidebar:
-          st.button("🔄 Refresh data", on_click=_refresh_data, use_container_width=True)
+    with st.sidebar:
+        st.button("🔄 Refresh data", on_click=_refresh_data, use_container_width=True)
 
-     return None
+    return None
 
 
 def _refresh_data() -> None:
@@ -107,4 +108,3 @@ def _refresh_data() -> None:
     for key in CSV_CONFIG:
         st.session_state.pop(key, None)
     st.session_state.pop("data_loaded", None)
-

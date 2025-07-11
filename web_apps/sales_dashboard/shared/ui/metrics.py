@@ -18,13 +18,13 @@ Internal Helpers:
 import pandas as pd
 
 
-
 # ─── PUBLIC API ──────────────────────────────────────────────────────────────
 
+
 def compute_metrics(
-    all_orders_df: pd.DataFrame, 
-    all_orders_df_hourly: pd.DataFrame, 
-    all_orders_df_hourly_last_event: pd.DataFrame, 
+    all_orders_df: pd.DataFrame,
+    all_orders_df_hourly: pd.DataFrame,
+    all_orders_df_hourly_last_event: pd.DataFrame,
 ) -> dict:
     """
     Compute and format sales metrics, plus percentage deltas versus a prior period.
@@ -57,22 +57,22 @@ def compute_metrics(
     """
 
     total_units_sold = all_orders_df["quantity"].sum()
-    total_revenue    = all_orders_df["item_price"].sum()
+    total_revenue = all_orders_df["item_price"].sum()
 
-    avg_units_sold   = all_orders_df_hourly["quantity"].mean()
-    avg_revenue      = all_orders_df_hourly["item_price"].mean()
+    avg_units_sold = all_orders_df_hourly["quantity"].mean()
+    avg_revenue = all_orders_df_hourly["item_price"].mean()
 
-    last_avg_units   = all_orders_df_hourly_last_event["quantity"].mean()
+    last_avg_units = all_orders_df_hourly_last_event["quantity"].mean()
     last_avg_revenue = all_orders_df_hourly_last_event["item_price"].mean()
 
-    diff_units = ((avg_units_sold / last_avg_units)   - 1) * 100
-    diff_revs  = ((avg_revenue    / last_avg_revenue) - 1) * 100
+    diff_units = ((avg_units_sold / last_avg_units) - 1) * 100
+    diff_revs = ((avg_revenue / last_avg_revenue) - 1) * 100
 
     return {
-        "total_units_sold":        f"{int(total_units_sold):,}",
-        "total_revenue":           f"${total_revenue:,.2f}",
-        "avg_units_sold":          f"{int(avg_units_sold):,}",
-        "avg_revenue":             f"${avg_revenue:,.2f}",
-        "diff_units_vs_last":      f"{diff_units:.2f}%",
-        "diff_revenue_vs_last":    f"{diff_revs:.2f}%"
+        "total_units_sold": f"{int(total_units_sold):,}",
+        "total_revenue": f"${total_revenue:,.2f}",
+        "avg_units_sold": f"{int(avg_units_sold):,}",
+        "avg_revenue": f"${avg_revenue:,.2f}",
+        "diff_units_vs_last": f"{diff_units:.2f}%",
+        "diff_revenue_vs_last": f"{diff_revs:.2f}%",
     }

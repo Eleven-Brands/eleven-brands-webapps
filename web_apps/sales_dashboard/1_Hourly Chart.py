@@ -34,7 +34,6 @@ all_orders_df = build_all_orders_full()
 selected_date, event_day = sidebar_selector(EVENT_DATES)
 
 
-
 # ─── Plot ───────────────────────────────────────────────────────────────────
 
 row1 = st.columns(2)
@@ -45,15 +44,15 @@ for col, region in zip(columns, SALES_REGIONS):
     col.title(region)
 
     hourly_chart(
-        st_container=col, 
-        all_orders_df=all_orders_df, 
-        date_col="local_date", 
-        sales_region_col="sales_region", 
-        selected_region=region, 
-        selected_date=selected_date, 
+        st_container=col,
+        all_orders_df=all_orders_df,
+        date_col="local_date",
+        sales_region_col="sales_region",
+        selected_region=region,
+        selected_date=selected_date,
         actual_col="actual_quantity",
         forecast_col="forecast_quantity",
         target_col="target_quantity",
         is_percent=False,
-        has_display_labels=False
+        has_display_labels=False,
     )

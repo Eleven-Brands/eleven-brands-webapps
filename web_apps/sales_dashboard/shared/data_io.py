@@ -32,11 +32,11 @@ from dataclasses import dataclass
 from googleapiclient.discovery import build, Resource
 from googleapiclient.errors import HttpError
 from google.oauth2 import service_account
-from googleapiclient.http import MediaIoBaseDownload 
-
+from googleapiclient.http import MediaIoBaseDownload
 
 
 # ─── PUBLIC API ──────────────────────────────────────────────────────────────
+
 
 @dataclass(frozen=True)
 class FilesData:
@@ -90,25 +90,39 @@ def load_all_data() -> FilesData:
     return FilesData(**{k: st.session_state[k] for k in CSV_CONFIG})
 
 
-
 # ─── CONFIGURATION ──────────────────────────────────────────────────────────
 
 # Mapping of session_state keys to CSV file locations and pandas.read_csv kwargs.
 CSV_CONFIG: Dict[str, Any] = {
-    'df_us_all_orders_temp':   { 'file_id': '11JDuFnWReqpUmrICjjMqggYgNto4mnnq',  'kwargs': {'sep': '\t'} },
-    'df_gb_all_orders_temp':   { 'file_id': '11KbuTlSoGya-8JJ62srA1wKgiiZrGtt_',  'kwargs': {'sep': '\t'} },
-    'df_sales_channel':        { 'file_id': '11Mf8mVlRP-g2wjeOK0o8Hlei4Z2Kirp9',  'kwargs': {} },
-    'df_all_orders_events':    { 'file_id': '11laDWsPIj-UcGv6aqrjOfjv0XL7A4kJ7',  'kwargs': {} },
-    'df_skus':                 { 'file_id': '1LQ5fKQw3sch6mvaPBNExtR_Yeo_cnx91',  'kwargs': {} },
-    'df_base_sku_hier':        { 'file_id': '1LNt4ozn_L9sz48cW8_6pwNpF3srVYZgH',  'kwargs': {} },
-    'df_amazon_family':        { 'file_id': '1LQAHbcOlkEbwrA-HsmZPkcHy4wyFfXYo',  'kwargs': {} },
-    'target_primeday_2025_06': { 'file_id': '1ESxeRILDRyCvwbiCEMQQvebshCLK449h',  'kwargs': {} },
-    'committed_units_2025_06': { 'file_id': '1SEi_-9-VLfV51lngMe_asP4vzTgORbLO',  'kwargs': {} },
+    "df_us_all_orders_temp": {
+        "file_id": "11JDuFnWReqpUmrICjjMqggYgNto4mnnq",
+        "kwargs": {"sep": "\t"},
+    },
+    "df_gb_all_orders_temp": {
+        "file_id": "11KbuTlSoGya-8JJ62srA1wKgiiZrGtt_",
+        "kwargs": {"sep": "\t"},
+    },
+    "df_sales_channel": {"file_id": "11Mf8mVlRP-g2wjeOK0o8Hlei4Z2Kirp9", "kwargs": {}},
+    "df_all_orders_events": {
+        "file_id": "11laDWsPIj-UcGv6aqrjOfjv0XL7A4kJ7",
+        "kwargs": {},
+    },
+    "df_skus": {"file_id": "1LQ5fKQw3sch6mvaPBNExtR_Yeo_cnx91", "kwargs": {}},
+    "df_base_sku_hier": {"file_id": "1LNt4ozn_L9sz48cW8_6pwNpF3srVYZgH", "kwargs": {}},
+    "df_amazon_family": {"file_id": "1LQAHbcOlkEbwrA-HsmZPkcHy4wyFfXYo", "kwargs": {}},
+    "target_primeday_2025_06": {
+        "file_id": "1ESxeRILDRyCvwbiCEMQQvebshCLK449h",
+        "kwargs": {},
+    },
+    "committed_units_2025_06": {
+        "file_id": "1SEi_-9-VLfV51lngMe_asP4vzTgORbLO",
+        "kwargs": {},
+    },
 }
 
 
-
 # ─── LOADING LOGIC ───────────────────────────────────────────────────────────
+
 
 @st.cache_resource
 def get_drive_service() -> Resource:
@@ -138,12 +152,8 @@ def _get_drive_file_modified_time(file_id: str) -> datetime:
     drive = get_drive_service()
     metadata = (
         drive.files()
-             .get(
-                 fileId=file_id,
-                 supportsAllDrives=True,
-                 fields="modifiedTime"
-             )
-             .execute()
+        .get(fileId=file_id, supportsAllDrives=True, fields="modifiedTime")
+        .execute()
     )
 
     modified_dt = pd.to_datetime(metadata["modifiedTime"])
@@ -152,10 +162,7 @@ def _get_drive_file_modified_time(file_id: str) -> datetime:
 
 
 def _load_sheet_from_drive(
-    file_id: str, 
-    max_retries: int = 3,
-    backoff_factor: float = 1.0,
-    **read_csv_kwargs
+    file_id: str, max_retries: int = 3, backoff_factor: float = 1.0, **read_csv_kwargs
 ) -> pd.DataFrame:
     """
     Download a file from Google Drive into a pandas DataFrame, retrying on failures.
@@ -184,11 +191,11 @@ def _load_sheet_from_drive(
 
     drive = get_drive_service()
 
-    for attempt in range(1, max_retries+1):
+    for attempt in range(1, max_retries + 1):
         try:
 
             request = drive.files().get_media(
-                fileId=file_id, 
+                fileId=file_id,
                 supportsAllDrives=True,
             )
             buffer = io.BytesIO()
@@ -209,7 +216,6 @@ def _load_sheet_from_drive(
                     f"Could not fetch Drive file {file_id} after "
                     f"{max_retries} attempts: {e}"
                 ) from e
-
 
         # Otherwise, wait then retry
         wait_seconds = backoff_factor * (2 ** (attempt - 1))
@@ -242,13 +248,13 @@ def _load_into_session() -> None:
         pandas.errors.ParserError: If parsing a downloaded CSV into a DataFrame fails.
     """
 
-    if not st.session_state.get('data_loaded', False):
+    if not st.session_state.get("data_loaded", False):
         for key, conf in CSV_CONFIG.items():
-            df = _load_sheet_from_drive(conf['file_id'], **conf['kwargs'])
+            df = _load_sheet_from_drive(conf["file_id"], **conf["kwargs"])
             st.session_state[key] = df
 
             # Get Last Modified Date
-            modified_dt = _get_drive_file_modified_time(conf['file_id'])
+            modified_dt = _get_drive_file_modified_time(conf["file_id"])
             st.session_state[f"{key}_modified_time"] = modified_dt
 
-        st.session_state['data_loaded'] = True
+        st.session_state["data_loaded"] = True
