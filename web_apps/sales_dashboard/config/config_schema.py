@@ -4,10 +4,6 @@ config_schema.py
 This module defines core schema types and constants used across the application for
 order and product modeling. It provides:
 
-- Typed dictionaries and type aliases:
-    - ColumnMeta: describes metadata for a single column (type, alias, help text).
-    - Schema: mapping of column names to ColumnMeta definitions.
-
 - Lists of supported identifiers and columns:
     - SALES_REGIONS: ISO region codes for marketplaces.
     - SYSTEM_COLS: internal system field names (audit and versioning).
@@ -26,16 +22,7 @@ These definitions ensure consistent column naming, data validation, and timezone
 handling throughout the data pipelines.
 """
 
-from typing import TypedDict, Dict, List
-
-
-class ColumnMeta(TypedDict):
-    type: str
-    alias: str
-    help: str
-
-
-Schema = Dict[str, ColumnMeta]
+from typing import List
 
 
 SALES_REGIONS: List[str] = ["US", "CA", "GB", "EU"]

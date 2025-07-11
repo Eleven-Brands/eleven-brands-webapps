@@ -6,7 +6,6 @@ order data from multiple marketplace regions, and for converting UTC purchase ti
 into each order's local timezone. It exposes three public functions:
 
      build_all_orders_full()
-     build_all_orders_region_date_hour()
      build_all_orders_actual_event()
 
 Returns fully prepared pandas DataFrames with additional local datetime fields.
@@ -99,34 +98,6 @@ def build_all_orders_full() -> pd.DataFrame:
             as_index=False,
         )
         .agg(quantity=("quantity", "sum"), item_price=("item_price", "sum"))
-    )
-    return df
-
-
-@st.cache_data
-def build_all_orders_region_date_hour() -> pd.DataFrame:
-    """
-    Cached Function
-    Load and aggregate all orders by local date, hour, and region.
-
-    This function retrieves the all orders DataFrame with local datetime fields, then
-    groups & sums `quantity`by:
-         - sales_region
-         - local_date
-         - local_hour
-
-    Returns:
-         A DataFrame with columns:
-              - sales_region (str): Two-letter sales region code.
-              - local_date (datetime.date): The date of the orders.
-              - local_hour (int): The hour of day (0-23).
-              - quantity (int): Total quantity sold in that hour for that region.
-    """
-
-    df = (
-        _get_all_orders_with_local_datetime_df()
-        .groupby(["local_date", "local_hour", "sales_region"], as_index=False)
-        .agg(quantity=("quantity", "sum"))
     )
     return df
 
