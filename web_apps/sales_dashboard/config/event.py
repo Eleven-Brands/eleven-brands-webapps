@@ -12,8 +12,8 @@ import datetime
 
 EVENT_NAME = "Prime Day"
 EVENT_DATES = {
-    "PD - Day 1": datetime.date(2025, 7, 8),
-    "PD - Day 2": datetime.date(2025, 7, 9),
-    "PD - Day 3": datetime.date(2025, 7, 10),
-    "PD - Day 4": datetime.date(2025, 7, 11),
+    "PD - Day 1": datetime.date(2025, 10,  7),
+    "PD - Day 2": datetime.date(2025, 10,  8),
+    "PD - Day 3": datetime.date(2025, 10,  9),
+    "PD - Day 4": datetime.date(2025, 10, 10),
 }

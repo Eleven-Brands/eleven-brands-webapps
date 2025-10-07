@@ -110,14 +110,8 @@ CSV_CONFIG: Dict[str, Any] = {
     "df_skus": {"file_id": "1LQ5fKQw3sch6mvaPBNExtR_Yeo_cnx91", "kwargs": {}},
     "df_base_sku_hier": {"file_id": "1LNt4ozn_L9sz48cW8_6pwNpF3srVYZgH", "kwargs": {}},
     "df_amazon_family": {"file_id": "1LQAHbcOlkEbwrA-HsmZPkcHy4wyFfXYo", "kwargs": {}},
-    "target_primeday_2025_06": {
-        "file_id": "1ESxeRILDRyCvwbiCEMQQvebshCLK449h",
-        "kwargs": {},
-    },
-    "committed_units_2025_06": {
-        "file_id": "1SEi_-9-VLfV51lngMe_asP4vzTgORbLO",
-        "kwargs": {},
-    },
+    "target_primeday_2025_06": {"file_id": "1dAC4rKZOh5T5TgVhUQ2WKhhFj-D_61nR", "kwargs": {}},
+    "committed_units_2025_06": {"file_id": "1oSAUqC5OIkeK5_W0aP_sHkRw2V3Ftd6g", "kwargs": {}},
 }
 
 
