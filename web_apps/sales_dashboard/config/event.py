@@ -12,6 +12,7 @@ import datetime
 
 EVENT_NAME = "Black Friday/Cyber Monday"
 EVENT_DATES = {
+
     "PD - Day 1": datetime.date(2025, 11, 20),
     "PD - Day 2": datetime.date(2025, 11, 21),
     "PD - Day 3": datetime.date(2025, 11, 22),
