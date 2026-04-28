@@ -7,27 +7,36 @@ on:
         description: "Branch or tag from engineering standards repo"
         required: false
         default: "main"
-  schedule:
-    - cron: "0 9 * * 1" # every Monday 09:00 UTC
+
+  repository_dispatch:
+    types: [engineering-standards-updated]
 
 permissions:
   contents: write
   pull-requests: write
 
+concurrency:
+  group: sync-engineering-standards
+  cancel-in-progress: true
+
 jobs:
   sync:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout consumer repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
+
       - name: Sync engineering standards
         env:
           STANDARDS_REPO: Eleven-Brands/eleven-brands-engineering-standards
-          STANDARDS_REF: ${{ inputs.standards_ref || 'main' }}
+          STANDARDS_REF: ${{ github.event.client_payload.ref || github.event.inputs.standards_ref || 'main' }}
           GITHUB_TOKEN: ${{ secrets.STANDARDS_REPO_TOKEN }}
         run: |
+          git config --global --unset-all http.https://github.com/.extraheader || true
           bash scripts/sync_engineering_standards.sh
 
       - name: Create or update PR
@@ -39,7 +48,7 @@ jobs:
           commit-message: "chore: sync engineering standards"
           body: |
             This PR syncs shared engineering standards files from:
-            - Eleven-Brands/eleven-brands-engineering-standards @ `${{ inputs.standards_ref || 'main' }}`
+            - Eleven-Brands/eleven-brands-engineering-standards @ `${{ github.event.client_payload.ref || github.event.inputs.standards_ref || 'main' }}`
 
             Synced items:
             - CODE_OF_CONDUCT.md
@@ -51,3 +60,10 @@ jobs:
           labels: |
             automation
             docs
+          add-paths: |
+            .github
+            CODE_OF_CONDUCT.md
+            CONTRIBUTING.md
+            LICENSE
+            setup_gcp.md
+            setup_local_development.md
