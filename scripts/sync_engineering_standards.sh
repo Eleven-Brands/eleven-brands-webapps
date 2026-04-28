@@ -22,9 +22,19 @@ cp -f "$tmp_dir/standards/LICENSE" .
 cp -f "$tmp_dir/standards/setup_gcp.md" .
 cp -f "$tmp_dir/standards/setup_local_development.md" .
 
-# ---- Enforce .github conventions (mandatory) ----
-rm -rf .github
-mkdir -p .github
-rsync -a "$tmp_dir/standards/.github/" .github/
+# ---- Enforce .github conventions (selective — preserves consumer workflows) ----
+if [ -d "$tmp_dir/standards/.github/ISSUE_TEMPLATE" ]; then
+  mkdir -p .github/ISSUE_TEMPLATE
+  rsync -a --delete "$tmp_dir/standards/.github/ISSUE_TEMPLATE/" .github/ISSUE_TEMPLATE/
+fi
+
+if [ -f "$tmp_dir/standards/.github/CODEOWNERS" ]; then
+  mkdir -p .github
+  cp -f "$tmp_dir/standards/.github/CODEOWNERS" .github/CODEOWNERS
+fi
+
+mkdir -p .github/workflows
+cp -f "$tmp_dir/standards/.github/workflows/sync-engineering-standards.yml" \
+  .github/workflows/sync-engineering-standards.yml
 
 echo "Sync complete."
