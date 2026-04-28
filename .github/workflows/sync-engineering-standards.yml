@@ -22,11 +22,9 @@ concurrency:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout consumer repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
 
@@ -40,8 +38,10 @@ jobs:
           bash scripts/sync_engineering_standards.sh
 
       - name: Create or update PR
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
           branch: chore/sync-engineering-standards
           delete-branch: true
           title: "chore: sync engineering standards"
