@@ -6,6 +6,10 @@ Define the current event name and its associated dates for the Sales Dashboard.
 This module sets the EVENT_NAME constant and the EVENT_DATES mapping,
 which associates human-readable labels with concrete `datetime.date` objects
 for use throughout the app.
+
+IMPORTANT: Update EVENT_NAME and EVENT_DATES before every sales event
+(Prime Day, Black Friday, etc.). Stale dates here cause the forecasting
+logic to silently compare against the wrong period.
 """
 
 import datetime
