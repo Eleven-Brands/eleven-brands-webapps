@@ -1,20 +1,18 @@
-# Contributing to Eleven-Brands-Monorepo
+# Contributing to Eleven Brands Repositories
 
-This document outlines the process for contributing code, reporting issues, and maintaining quality.
+This document outlines the process for contributing code, reporting issues, and maintaining quality across all Eleven Brands repositories.
 
 > **Note:** Before you begin, make sure your local setup is fully up‑to‑date by following [setup_local_development.md](setup_local_development.md)
 
 ## Who Can Contribute
 
-Only current developers at Eleven Brands are permitted to contribute to this repository. If you are unsure whether you have access or rights, please consult the project maintainer.
+Only current developers at Eleven Brands are permitted to contribute to these repositories. If you are unsure whether you have access or rights, please consult the project maintainer.
 
 ## Project Structure
 
-- `common/` holds shared utilities and reusable functions
-- `pipelines/` contains modular ingestion flows by domain
-- `webapps/` includes Streamlit apps and related UIs
+Each repository has its own internal structure. Before making changes, read the repo's `README.md` and `CLAUDE.md` (if present) to understand its conventions and folder layout.
 
-Please follow the existing folder structure and reuse shared utilities when possible.
+Please follow the existing folder structure within each repo and reuse shared utilities when possible.
 
 ## Contribution Guidelines
 
@@ -33,12 +31,13 @@ Please follow the existing folder structure and reuse shared utilities when poss
      git push -u origin <type>/<scope>
 
      # Pick a type that fits your work:
-     # • bugfix    – for small fixes  
-     # • feature   – for incremental features  
-     # • chore     – for maintenance, deps, etc.
-     # • app       – for whole‑app  
-     # • pipeline  – for whole ingestion pipelines  
-     # • webscrape – for whole webscraping scripts  
+     # • feat      – for new features or enhancements
+     # • fix       – for bug fixes
+     # • hotfix    – for urgent fixes that go directly to production
+     # • chore     – for maintenance, dependencies, config, etc.
+     # • docs      – for documentation changes only
+     # • refactor  – for code restructuring without changing behavior
+     # • release   – for release preparation commits
 
      # Example: Sales Dashboard app
      git checkout -b app/sales-dashboard
@@ -103,7 +102,7 @@ Please follow the existing folder structure and reuse shared utilities when poss
      <type>(<module_or_filename>): <short description>
      ```
 
-     - **type**: feat, fix, docs, chore, refactor, etc.
+     - **type**: feat, fix, hotfix, chore, docs, refactor, release.
      - **scope**: the file or module name (without path separators), in snake_case or PascalCase as it appears in the repo.
      - **description**: a concise summary of what changed.
 
