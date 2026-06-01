@@ -14,7 +14,6 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  workflows: write
 
 concurrency:
   group: sync-engineering-standards
@@ -62,7 +61,8 @@ jobs:
             automation
             docs
           add-paths: |
-            .github
+            .github/ISSUE_TEMPLATE
+            .github/CODEOWNERS
             CODE_OF_CONDUCT.md
             CONTRIBUTING.md
             LICENSE

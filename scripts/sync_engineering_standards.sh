@@ -33,8 +33,4 @@ if [ -f "$tmp_dir/standards/.github/CODEOWNERS" ]; then
   cp -f "$tmp_dir/standards/.github/CODEOWNERS" .github/CODEOWNERS
 fi
 
-mkdir -p .github/workflows
-cp -f "$tmp_dir/standards/.github/workflows/sync-engineering-standards.yml" \
-  .github/workflows/sync-engineering-standards.yml
-
 echo "Sync complete."
